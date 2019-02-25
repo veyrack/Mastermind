@@ -1,7 +1,6 @@
 (ns app.user)
 (require '[clojure.string :as str])
 (require '[app.sources :as src])
-(require '[app.core :as c])
 
 (declare entrer-code)
 (declare compatible?)
@@ -9,13 +8,8 @@
 (declare str-to-key)
 (declare check-code)
 (declare end-game)
-(declare getGood)
-(declare getColor)
-(declare getBad)
-(declare containsV?)
-(declare frequences)
-(declare indications)
-(declare filtre-indications)
+
+
 
 (def colors #{:rouge, :bleu, :jaune, :vert, :noir, :blanc})
 (def g :good)
@@ -25,30 +19,20 @@
 (def nbTenta 5) ;Nombre de tentative pour le joueur
 
 
-(declare code-secret)
-(defn code-secret [n]
-  (loop [i 1,res []]
-    (if (> i n)
-      res
-      (recur (inc i) (conj res (rand-nth [:rouge :bleu :vert :jaune :noir :blanc]))))))
-
 
 (declare game)
 (defn game []
-  (println "0 pour jouer ou 1 pour faire deviner au solver")
-  (let [x (read-line)]
-    (if (= (Integer/parseInt x) 0)
-      (let [soluce (code-secret taille)]
-        (entrer-code soluce 0))
-      (println "en construction"))))
+  (let [soluce (src/code-secret taille)]
+    (entrer-code soluce 0)))
 
 
 (defn entrer-code [sol cpt]
   "Boucle pour entrer un code compatible et verifie ce code"
+  (println "||------------ Tentative en cours :" cpt "-------------||")
   (if (= cpt nbTenta) ;check si le nombre de tentative est fini
-    (end-game)
+    (end-game 0)
     ;else on continue la partie
-    (or (println "Entrez un code du type ':couleur :couleur :couleur :couleur'")
+    (or (println "||            Entrez un code du type :             ||\n||       ':couleur ... :couleur' de taille"taille"      ||\n|| parmi" colors"||")
       (let [input (str/trim (read-line))] ;recupere l'entree
         (if (compatible? (str-to-key input)) ;Parse le string en vector et check si la forme est compatible
           (check-code sol (str-to-key input) cpt) ;check les couleurs
@@ -81,55 +65,14 @@
 
 (defn check-code [soluce input cpt]
   "check si le code est bon"
-  (let [check (filtre-indications soluce input (indications soluce input))]
+  (let [check (src/filtre-indications soluce input (src/indications soluce input))]
     (if (= check [g g g g])
-      (println "Tu es une personne formidable")
+      (end-game 1)
       (or (println check) (entrer-code soluce (inc cpt))))))
-
-
-(defn frequences [v]
-  (loop [s v,res {}]
-    (if (seq s)
-      (recur (rest s)
-        (assoc res (first s) (inc (get res (first s) 0))))
-      res)))
-
-
-(defn filtre-indications [code, try, indic]
-  "renvoi les bonnes indications"
-  (loop [index 0, res [], freq (frequences code)]
-    (if (< index (count code))
-      (let [color (get try index), tag (get indic index)]
-        (if (= tag :bad)
-          (recur (inc index), (conj res tag), freq)
-          (if (> (get freq color) 0)
-            (recur (inc index), (conj res tag), (update freq color dec))
-            (recur (inc index), (conj res :bad), freq))))
-      res)))
-
-
-(defn containsV? [v i]
-  (loop [s v]
-    (if (seq s)
-      (if (= i (first s))
-        true
-        (recur (rest s)))
-      false)))
-
-(defn indications [sol v]
-  "indique les :good | :color | :bad en fonction des positions"
-  (loop [s v,res [], m sol]
-    (if (seq s)
-      (if (= (first s) (first m))
-          (recur (rest s) (conj res :good) (rest m))
-          (if (containsV? sol (first s))
-            (recur (rest s) (conj res :color) (rest m))
-            (recur (rest s) (conj res :bad) (rest m))))
-      res)))
 
 
 
 (defn end-game [i]
   (if (= i 1)
-    (or (println "Tu es une personne formidable") (game))
-    (or (println "Perdu, fin du jeu") (game))))
+    (println "Tu es une personne formidable")
+    (println "Perdu, fin du jeu")))

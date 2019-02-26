@@ -5,7 +5,6 @@
 (declare entrer-code)
 (declare compatible?)
 (declare isColor?)
-(declare str-to-key)
 (declare check-code)
 (declare end-game)
 
@@ -28,15 +27,15 @@
 
 (defn entrer-code [sol cpt]
   "Boucle pour entrer un code compatible et verifie ce code"
-  (println "||------------ Tentative en cours :" cpt "-------------||")
+  (println "||------------ Tentative en cours :" (inc cpt) "-------------||")
   (if (= cpt nbTenta) ;check si le nombre de tentative est fini
     (end-game 0)
     ;else on continue la partie
-    (or (println "||            Entrez un code du type :             ||\n||       ':couleur ... :couleur' de taille"taille"      ||\n|| parmi" colors"||")
+    (or (println "||            Entrez un code du type :             ||\n||       ':couleur ... :couleur' de taille"taille"      ||\n|| parmi" colors"||\n")
       (let [input (str/trim (read-line))] ;recupere l'entree
-        (if (compatible? (str-to-key input)) ;Parse le string en vector et check si la forme est compatible
-          (check-code sol (str-to-key input) cpt) ;check les couleurs
-          (or (println "pas compatible") (entrer-code sol cpt)))))));si pas compatible entrer une nouvelle combinaison
+        (if (compatible? (src/str-to-key input)) ;Parse le string en vector et check si la forme est compatible
+          (check-code sol (src/str-to-key input) cpt) ;check les couleurs
+          (or (println "=> Le code n'est pas compatible\n") (entrer-code sol cpt)))))));si pas compatible entrer une nouvelle combinaison
 
 
 (defn compatible? [vec]
@@ -55,20 +54,14 @@
     true
     false))
 
-(defn str-to-key [str]
-  "transforme un string en vecteur de keywords"
-  (let [vec (str/split str #" ")]
-    (loop [s vec,res []]
-      (if (seq s)
-        (recur (rest s) (conj res (keyword (second (str/split (first s) #":")))))
-        res))))
+
 
 (defn check-code [soluce input cpt]
   "check si le code est bon"
   (let [check (src/filtre-indications soluce input (src/indications soluce input))]
     (if (= check [g g g g])
       (end-game 1)
-      (or (println check) (entrer-code soluce (inc cpt))))))
+      (or (println "=>"check"\n") (entrer-code soluce (inc cpt))))))
 
 
 

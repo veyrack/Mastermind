@@ -1,17 +1,20 @@
 (ns app.sources)
-
+(require '[clojure.string :as str])
 
 
 (def tailleM 4)
+(def indi #{:good :bad :color})
 
 ;; ## tirage aleatoire du code secret
 (declare code-secret)
+(declare frequences)
 (declare filtre-indications)
 (declare indications)
-(declare frequences)
 (declare containsV?)
 (declare geneGood)
-
+(declare str-to-key)
+(declare compatible?)
+(declare isIndic?)
 
 (defn code-secret [n]
   (loop [i 1,res []]
@@ -65,6 +68,31 @@
     (if (= 0 taille)
       res
       (recur (dec taille) (conj res :good)))))
+
+
+(defn compatible? [vec]
+  "check si l'input est bien de la forme [:good...]"
+  (loop [s vec,cpt 0]
+    (if (seq s)
+      (if (isIndic? (first s)) ;Check si first s est une couleur
+        (recur (rest s) (inc cpt))
+        false)
+      (if (not= cpt tailleM) ;Check si la longueur du code est bien 4
+        false
+        true))))
+
+(defn isIndic? [e]
+  (if (contains? indi e)
+    true
+    false))
+
+(defn str-to-key [str]
+  "transforme un string en vecteur de keywords"
+  (let [vec (str/split str #" ")]
+    (loop [s vec,res []]
+      (if (seq s)
+        (recur (rest s) (conj res (keyword (second (str/split (first s) #":")))))
+        res))))
 ;;(fact "Le `code-secret` est bien composé de couleurs."
 ;;    (every? #{:rouge :bleu :vert :jaune :noir :blanc
 ;;              (code-secret 4))

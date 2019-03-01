@@ -51,4 +51,8 @@
         => [:color :good :color :bad])
 
   (fact (src/containsV? [:vert :bleu :rouge :blanc] :blanc) => true)
-  (fact (src/geneGood 4) => [:good :good :good :good]))
+  (fact (src/geneGood 4) => [:good :good :good :good])
+  (fact (src/compatible? [:good :bad :good :bad]))
+  (fact (src/isIndic? :good) => true)
+  (fact (src/isIndic? good) => false)
+  (fact (src/str-to-key ":bleu :rouge :vert :jaune") => [:bleu :rouge :vert :jaune]))

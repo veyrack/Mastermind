@@ -5,7 +5,6 @@
 (def tailleM 4)
 (def indi #{:good :bad :color})
 
-;; ## tirage aleatoire du code secret
 (declare code-secret)
 (declare frequences)
 (declare filtre-indications)
@@ -44,6 +43,7 @@
 
 
 (defn containsV? [v i]
+  "Check si i est contenu dans le vecteur v"
   (loop [s v]
     (if (seq s)
       (if (= i (first s))
@@ -93,48 +93,3 @@
       (if (seq s)
         (recur (rest s) (conj res (keyword (second (str/split (first s) #":")))))
         res))))
-;;(fact "Le `code-secret` est bien composé de couleurs."
-;;    (every? #{:rouge :bleu :vert :jaune :noir :blanc
-;;              (code-secret 4))
-;;      => true)))
-
-;;(fact "Le `code-secret` a l'air aléatoire."
-;      (> (count (filter true? (map not=
-;                                   (repeatedly 20 #(code-secret 4))
-;                                   (repeatedly 20 #(code-secret 4))))
-;         0)
-;      => true)))
-
-
-;; ## Indication si les couleurs sont :good :bad ou :color
-
-
-
-;(fact "`indications` sont les bonnes."
-;      (indications [:rouge :rouge :vert :bleu]
-;                   [:vert :rouge :bleu :jaune]
-;      => [:color :good :color :bad]
-
-;      (indications [:rouge :rouge :vert :bleu]
-;                   [:bleu :rouge :vert :jaune]
-;      => [:color :good :good :bad]
-
-;      (indications [:rouge :rouge :vert :bleu]
-;                   [:rouge :rouge :vert :bleu]
-;      => [:good :good :good :good]
-
-;      (indications [:rouge :rouge :vert :vert]
-;                   [:vert :bleu :rouge :jaune]
-;      => [:color :bad :color :bad])))
-
-;; ## Donne les frequences dans un vecteur
-
-
-;(fact "les `frequences` suivantes sont correctes."
-;      (frequences [:rouge :rouge :vert :bleu :vert :rouge])
-;      => {:rouge 3 :vert 2 :bleu 1}
-;
-;      (frequences [:rouge :vert :bleu])
-;      => {:rouge 1 :vert 1 :bleu 1}
-;
-;      (frequences [1 2 3 2 1 4]) => {1 2, 2 2, 3 1, 4 1})))

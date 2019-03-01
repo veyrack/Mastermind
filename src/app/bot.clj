@@ -11,7 +11,6 @@
 (declare solveurInte)
 (declare init)
 (declare newTry)
-
 (declare solve)
 
 (defn solve []
@@ -21,18 +20,19 @@
 
 
 (defn solveur [soluce]
-  "solveur"
+  "solveur automatique"
   (let [init (init tailleM)]
     (loop [s soluce,res init,cpt 1]
       (let [indic (src/filtre-indications res s (src/indications res s))]
         (if (= indic (src/geneGood tailleM))
-          (println "Found: " res)
+          (or (println "Found: " res) res)
           (recur s (newTry res indic cpt ) (inc cpt)))))))
 
 (defn solveurInte []
+  "solveur interactif"
   (let [init (init tailleM)]
     (loop [res init,cpt 1]
-      (or (println "   Proposition du bot: "res"\n||        Entrez votre indication de type         ||\n||         ':good ... :good' de taille" tailleM"         ||\n||          parmi:"indi"          ||\n")
+      (or (println "  Proposition du bot: "res"\n||        Entrez votre indication de type         ||\n||         ':good ... :good' de taille" tailleM"         ||\n||          parmi:"indi"          ||\n")
         (let [input (str/trim (read-line))]
           (if (src/compatible? (src/str-to-key input))
             (if (= (src/str-to-key input) (src/geneGood tailleM))
@@ -44,6 +44,7 @@
 
 
 (defn init [taille]
+  "initialise un vecteur taille avec la premiere couleur"
   (loop [taille taille,res []]
     (if (> taille 0)
       (recur (dec taille) (conj res (get color 0)))

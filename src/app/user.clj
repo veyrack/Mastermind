@@ -15,7 +15,7 @@
 (def b :bad)
 (def c :color)
 (def taille 4)
-(def nbTenta 5) ;Nombre de tentative pour le joueur
+(def nbTenta 6) ;Nombre de tentative pour le joueur
 
 
 
@@ -27,7 +27,7 @@
 
 (defn entrer-code [sol cpt]
   "Boucle pour entrer un code compatible et verifie ce code"
-  (println "||------------ Tentative en cours :" (inc cpt) "-------------||")
+  (println "||--------- Tentative en cours :" (inc cpt) "sur"nbTenta"----------||")
   (if (= cpt nbTenta) ;check si le nombre de tentative est fini
     (end-game 0)
     ;else on continue la partie
@@ -67,5 +67,5 @@
 
 (defn end-game [i]
   (if (= i 1)
-    (println "Tu es une personne formidable")
-    (println "Perdu, fin du jeu")))
+    (or (println "Tu es une personne formidable") true)
+    (or (println "Perdu, fin du jeu") false)))
